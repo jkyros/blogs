@@ -24,7 +24,7 @@ This is an oversimplification, but for our purposes here, in "standard operation
 And then the MCO's `machine-config-controller`:
 
 4. Watches for `ControllerConfig` changes
-5. Uses `ControllerConfig` to generate/regenerate template `MachineConfig` and other special controller-generated config 
+5. Uses `ControllerConfig` to generate/regenerate template `MachineConfig` and other special controller-generated config
 6. Watches for `MachineConfig` changes 
 7. Merges alllllll that `MachineConfig` (template + user + generated) together deterministically into `rendered-configs` grouped by `MachineConfigPool` 
 8. Coordinates assignment of that rendered-config to nodes via a `desiredConfig` annotation (and the resulting reboots and drains) across a pool
