@@ -1,8 +1,10 @@
-# The Consequences Of Pausing MachineConfig Pools in OpenShift's Machine Config Operator
+# The Consequences Of Pausing MachineConfig Pools In OpenShift's Machine Config Operator (MCO)
+
+<img src=POSTALHAT.PNG>
 
 Author: John Kyros
 
-The Machine Config Operator (MCO) in OpenShift exposes a "Pause" feature on its MachineConfigPools that allows users to halt config deployment. We made some changes in 4.11 to try to make that feature "safer", and this blog tries to give some context around that: what pausing a MachineConfigPool actually does under the hood, the consequences, and a small glimpse into how the MCO team thinks about exposing and evolving features like this.
+The Machine Config Operator (MCO) in OpenShift exposes a "Pause" feature on its MachineConfigPools that allows users to halt config deployment. We made some changes in 4.11 to try to make that feature "safer", and this blog tries to give some context around what pausing a MachineConfigPool actually does under the hood, the consequences/tradeoffs, and a small glimpse into how the MCO team thinks about exposing and evolving features like this.
 
 ## The MCO Added A New Critical Alert
 
@@ -104,9 +106,9 @@ This metaphorical postal service also has a very weird feature (`Pause`), wherei
 
 * the Mayor  (`Administrator`) of a city (`MachineConfigPool`) can call in and say "stop delivering mail to my city until I tell you that you can resume delivery" (`.Spec.Pause`) and the postal service will obey and stop that "last mile" letter carrier (`node_controller`) for that city from delivering mail.
 
-I know, it's not 100% perfect, but it should get us where we need to go
+I know, it's not 100% perfect, but it should get us where we need to go. 
 
-<img src=./PauseDiagramOversimplified.svg style="width: 50%; height: 50%"/>
+<img src=./PauseDiagramOversimplified.PNG style="width: 50%; height: 50%"/>
 (this diagram is obviously a hand-wavy oversimplification)
 
 ## The Mayor Said To Stop, So We Did?
@@ -141,11 +143,11 @@ And that super important rendered `MachineConfig` just...sits there behind `Paus
 
 ## We're Telling the Mayor There Will Be Trouble
 
-So that's what the alert is for. Back in our metaphor, the alert we added is probably something like: "when we know 'important' mail is waiting at the post office, make sure the Mayor knows, call him on the Big Red Phone, and he can decide what to do".
+So that's what the alert is for. Back in our metaphor, the alert we added is probably something like: "when we know 'important' mail is waiting at the post office, make sure the Mayor knows there is impact. Call him on the Big Red Telephone, and he can decide what to do".
 
 ## But If It's So Important, Why Not Just Deliver It?
 
-So now you're probably thinking "well why not just let that "important mail" -- that certificate -- through?". It is "platform" config, not user config. We know where it's going and can sneak it in without a reboot, why not just do that?
+So now you're probably thinking "well why not just let that 'important mail' -- that certificate -- through?". It is "platform" config, not user config. We know where it's going and can sneak it in without a reboot, why not just do that?
 
 Well, the short version is that:
 
@@ -158,7 +160,7 @@ The "contract" right now that we have with users is more or less that when pools
 
 Alright, so what if we did decide to lie to you? We tell you your pool is paused, but we give a special dispensation to "important config" (however we classify it) and we just sneak it though and have the `machine-config-daemon` just write it to the node.
 
-That means (among other things):
+That would mean (among other things):
 
 1. We have to have a way to know what is/isn't "important" enough to bypass pause
 2. We have to tell you about that special case (maybe in a "red box" in our documentation that you may or may not happen to read)
@@ -176,10 +178,10 @@ So there isn't isn't an immediately obvious solution here without having to trad
 
 One of those trades might eventually end up being right, but we're not quite sure yet, and regardless the ramifications would need to be fully communicated and understood.
 
-## How Do You Want Your Mail Delivered?
+## How Do You Want The MCO "Postal Service" To Handle Important Deliveries?
 
-So like I said at the beginning -- we're not always entirely sure how you're going to use what we put out there. We want to help you, but we also want to stay out of your way. Ideally we would be 100% helpful and 0% in your way, but understandably that's difficult given the wide variety of use cases.
+So like I said at the beginning -- we're not always entirely sure how you're going to use what we put out there. We want to help you, but we also want to stay out of your way. Ideally we would be 100% helpful and 0% "in your way", but understandably that's difficult given the wide variety of use cases.
 
  Maybe you'll use `Pause` how we thought it would be used. Maybe you will use it an entirely different way, but either way [we would love to know what you think](https://github.com/openshift/machine-config-operator/issues).
 
-When the MCO isn't worrying about the consequences of `Pause`, we're working on cool new things like [OCP CoreOS layering](https://github.com/openshift/enhancements/blob/master/enhancements/ocp-coreos-layering/ocp-coreos-layering.md) -- check it out!
+When the MCO isn't worrying about the consequences of `Pause`, we're working on cool new things like [OCP CoreOS layering](https://github.com/openshift/enhancements/blob/master/enhancements/ocp-coreos-layering/ocp-coreos-layering.md) which lets you use Containerfile (Dockerfile) syntax to configure your nodes -- [check it out](https://github.com/openshift/enhancements/blob/master/enhancements/ocp-coreos-layering/ocp-coreos-layering.md#phase-0)!
