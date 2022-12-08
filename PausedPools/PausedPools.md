@@ -1,4 +1,8 @@
-# Important Deliveries to Paused Pools
+# The Consequences Of Pausing MachineConfig Pools in OpenShift's Machine Config Operator
+
+Author: John Kyros
+
+The Machine Config Operator (MCO) in OpenShift exposes a "Pause" feature on its MachineConfigPools that allows users to halt config deployment. We made some changes in 4.11 to try to make that feature "safer", and this blog tries to give some context around that: what pausing a MachineConfigPool actually does under the hood, the consequences, and a small glimpse into how the MCO team thinks about exposing and evolving features like this.
 
 ## The MCO Added A New Critical Alert
 
@@ -10,9 +14,9 @@ For users who *are* using the `Pause` feature, especially those who leave their 
 
 ## But Why Did We Do That?
 
-The short answer is: Because we are trying to help you
+The short answer is: Because we are trying to help you.
 
-The long answer is something like: The consequences of long-term pausing a `MachineConfigPool`are not immediately clear and predictable without a detailed understanding of internal OpenShift workings, and some of those consequences are very unfortunate. 
+The long answer is something like: The consequences of long-term pausing a `MachineConfigPool`are not immediately clear and predictable without a detailed understanding of internal OpenShift workings, and some of those consequences are very unfortunate.
 
 We also don't really know what you're doing all the time or why you're doing it, so sometimes it's hard for us to know how to help without getting in the way.
 
